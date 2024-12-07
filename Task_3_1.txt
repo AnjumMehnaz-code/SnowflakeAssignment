@@ -1,0 +1,45 @@
+--Implement Row Access - Restrict access to patient records based on the user’s region.
+
+--create Table
+CREATE TABLE PatientRecords (
+    patient_id INT,
+    patient_name STRING,
+    region STRING,
+    diagnosis STRING,
+    date_of_visit DATE
+);
+ 
+--Insert records
+INSERT INTO PatientRecords (patient_id, patient_name, region, diagnosis, date_of_visit) 
+VALUES
+    (1, 'John Doe', 'North', 'Flu', '2024-12-01'),
+    (2, 'Jane Smith', 'South', 'Cold', '2024-12-02'),
+    (3, 'Alice Brown', 'North', 'COVID-19', '2024-12-03'),
+    (4, 'Bob White', 'East', 'Back Pain', '2024-12-04'),
+    (5, 'Charlie Green', 'West', 'Asthma', '2024-12-05');
+ 
+
+
+
+--create a row access policy
+
+CREATE ROW ACCESS POLICY region_policy 
+AS (region STRING) RETURNS BOOLEAN ->
+CASE 
+    WHEN CURRENT_ROLE() = 'ANALYST' THEN region = 'North'
+    ELSE FALSE
+  END;
+
+
+
+--Apply the policy to a table
+ALTER TABLE PatientRecords ADD ROW ACCESS POLICY RegionPolicy ON (Region);
+
+--Test the policy
+
+SELECT * FROM PatientRecords;
+
+Only rows matching the user's region are visible
+
+
+
